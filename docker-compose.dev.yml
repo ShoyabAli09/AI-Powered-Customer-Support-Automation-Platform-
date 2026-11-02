@@ -1,0 +1,28 @@
+version: '3.8'
+
+# Development overlay configuration
+# Usage: docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  backend:
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    volumes:
+      - ./backend:/app
+    environment:
+      - DEBUG=True
+      - ENVIRONMENT=development
+
+  celery_worker:
+    volumes:
+      - ./backend:/app
+    environment:
+      - DEBUG=True
+      - ENVIRONMENT=development
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    # In development, mounts can be added or run directly with vite dev
+    volumes:
+      - ./frontend/src:/app/src
